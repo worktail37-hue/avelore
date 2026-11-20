@@ -148,8 +148,9 @@ service cloud.firestore {
 
     // Match publicly shared moodboards
     match /moodboards/{moodboardId} {
-      // Anyone with the unique public URL can view the shared moodboard
-      allow get: if true;
+      // Anyone with the unique public URL can view the shared moodboard.
+      // get is by unguessable document id (no enumeration); list stays owner-only below.
+      allow get: if isValidId(moodboardId) && moodboardId.size() >= 12;
       // Listing is restricted to owner role to prevent bulk scraping
       allow list: if isOwnerRole();
       // Anyone can create a public shared moodboard

@@ -1059,7 +1059,10 @@ app.post('/api/enquiries', enquiryRateLimiter, async (req: Request, res: Respons
 });
 
 // Dedicated endpoint for sending patron auto-reply confirmation email
-app.post('/api/enquiries/autoreply', async (req: Request, res: Response) => {
+// Public route that sends an outbound email to a caller-supplied address, so it is
+// rate-limited and requires a real enquiry reference (or a signed-in caller) to stop
+// it being used as an open relay / spam cannon.
+app.post('/api/enquiries/autoreply', enquiryRateLimiter, async (req: Request, res: Response) => {
   try {
     const rawData = req.body?.data || req.body || {};
     const { referenceId, clientName, clientEmail, clientPhone, subject, message, boutique, date } = rawData;
