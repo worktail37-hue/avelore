@@ -8,7 +8,7 @@ This specification defines the Attribute-Based Access Control (ABAC), Zero-Trust
 
 ### Collection: `enquiries`
 1. **Zero Guest Access**: Unauthenticated visitors have strictly zero read, list, update, or delete access to `/enquiries/{enquiryId}` via the client Firestore SDK.
-2. **Owner-Only Read & List Enforcement**: Only authenticated users with an verified `owner` role (`request.auth.token.email == 'worktail37@gmail.com' && request.auth.token.email_verified == true`, or a verified profile `role == 'owner'`) may read single documents (`get`) or execute query scans (`list`). Non-owner patrons and guests receive `PERMISSION_DENIED`.
+2. **Owner-Only Read & List Enforcement**: Only authenticated users with verified owner custom claims (`request.auth.token.admin == true`, `request.auth.token.isAdmin == true`, or `request.auth.token.role in ['owner','admin']`) may read single documents (`get`) or execute query scans (`list`). The owner email is never hardcoded in rules. Non-owner patrons and guests receive `PERMISSION_DENIED`.
 3. **Identity Spoofing Guard**: When an authenticated user submits an enquiry directly, any attached `userId` must strictly match `request.auth.uid`. Falsifying the `userId` to target or frame another patron is strictly blocked.
 4. **ID Format Hardening**: Document IDs must match the regex `^[a-zA-Z0-9_\-]+$` and be between 1 and 128 characters.
 5. **Anti-Shadow Field Protection**: Allowed keys on creation are strictly bounded to `['id', 'clientName', 'clientEmail', 'clientPhone', 'subject', 'message', 'userId', 'status', 'createdAt']`. Any extraneous or ghost attributes (e.g. `role`, `isAdmin`, `isApproved`) immediately fail validation.

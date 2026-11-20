@@ -15,8 +15,7 @@ service cloud.firestore {
     // Authenticated users with verified 'owner' or 'admin' role (custom claims or verified owner email)
     function isOwnerRole() {
       return isSignedIn() && (
-        (request.auth.token.email == 'worktail37@gmail.com' && request.auth.token.email_verified == true) ||
-        (request.auth.token.admin == true || request.auth.token.isAdmin == true || request.auth.token.role in ['owner', 'admin'])
+        request.auth.token.admin == true || request.auth.token.isAdmin == true || request.auth.token.role in ['owner', 'admin']
       );
     }
 

@@ -182,7 +182,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(express.json({ limit: '1mb' }));
 
 // Owner contact constants protected on server-side
-const OWNER_EMAIL = process.env.OWNER_EMAIL || 'worktail37@gmail.com';
+const OWNER_EMAIL = (process.env.OWNER_EMAIL || '').trim().toLowerCase();
 const OWNER_WHATSAPP_NUMBER = process.env.OWNER_WHATSAPP_NUMBER || '';
 
 // Pre-Deployment Check 3: Standardized Error Handling with Correlation IDs
@@ -1264,7 +1264,7 @@ app.post(['/api/triggers/firestore-submission', '/api/triggers/consultations', '
   }
 });
 
-// Admin Route to view recent inquiries (strictly restricted to authenticated owner worktail37@gmail.com)
+// Admin Route to view recent inquiries (strictly restricted to the authenticated owner, set via OWNER_EMAIL)
 app.get('/api/admin/notifications', requireAdminAuth, (req: Request, res: Response) => {
   return res.json({
     ownerEmail: OWNER_EMAIL,
@@ -1273,7 +1273,7 @@ app.get('/api/admin/notifications', requireAdminAuth, (req: Request, res: Respon
   });
 });
 
-// Owner WhatsApp Configuration Endpoints (Strictly restricted to authenticated owner worktail37@gmail.com)
+// Owner WhatsApp Configuration Endpoints (strictly restricted to the authenticated owner, set via OWNER_EMAIL)
 app.get('/api/admin/whatsapp-config', requireAdminAuth, (req: Request, res: Response) => {
   return res.json({
     ownerEmail: OWNER_EMAIL,
@@ -1299,7 +1299,7 @@ app.post('/api/admin/whatsapp-config', requireAdminAuth, (req: Request, res: Res
   });
 });
 
-// Production Channel Verification Endpoint (Strictly restricted to authenticated owner worktail37@gmail.com + rate limited)
+// Production Channel Verification Endpoint (strictly restricted to the authenticated owner, set via OWNER_EMAIL + rate limited)
 app.post('/api/admin/verify-channel', requireAdminAuth, adminVerificationRateLimiter, async (req: Request, res: Response) => {
   try {
     const testResult = await executeEnquiryAlert({
